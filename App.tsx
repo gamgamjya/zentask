@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { User } from './types';
 import LoginPage from './components/LoginPage';
@@ -19,15 +19,27 @@ declare const google: any;
 const App: React.FC = () => {
   const [user, setUser] = useLocalStorage<User | null>('user', null);
   const [allUsers, setAllUsers] = useLocalStorage<User[]>('all_users', []);
+  const [loginError, setLoginError] = useState<string | null>(null);
 
   const handleLogin = (credentialResponse: any) => {
+    setLoginError(null); // 새로운 로그인 시도 시 오류 초기화
     const decoded: { sub: string; name: string; picture: string; email: string; } | null = jwtDecode(credentialResponse.credential);
     if (!decoded) {
-      // TODO: 사용자에게 디코딩 실패를 알리는 알림 추가
+      setLoginError("로그인 정보를 해석할 수 없습니다. 다시 시도해주세요.");
       return;
     }
     
     const { sub, name, picture, email } = decoded;
+
+    // 도메인 검사
+    if (!email || !email.endsWith('@parable-asia.com')) {
+      setLoginError('parable-asia.com 도메인 계정으로만 로그인할 수 있습니다.');
+      if (typeof google !== 'undefined') {
+        google.accounts.id.disableAutoSelect();
+      }
+      setUser(null); // 잘못된 계정 자동 로그인을 방지하기 위해 사용자 상태를 null로 설정
+      return;
+    }
 
     let userToLogin = allUsers.find(u => u.id === sub);
 
@@ -50,7 +62,7 @@ const App: React.FC = () => {
   };
 
   if (!user) {
-    return <LoginPage onLogin={handleLogin} />;
+    return <LoginPage onLogin={handleLogin} error={loginError} />;
   }
 
   return <MainApp user={user} onLogout={handleLogout} setUser={setUser} allUsers={allUsers} setAllUsers={setAllUsers} />;
