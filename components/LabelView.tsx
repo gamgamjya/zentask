@@ -1,90 +1,114 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { GoogleIcon } from './icons/Icons';
+import React, { useState } from 'react';
+import { Task, Project, Label } from '../types';
+import TaskItem from './TaskItem';
+import { TagIcon } from './icons/Icons';
 
-declare const google: any;
-
-interface LoginPageProps {
-  onLogin: (response: any) => void;
-  error: string | null;
+interface LabelViewProps {
+  tasks: Task[];
+  projects: Project[];
+  labels: Label[];
+  onToggleTask: (id: string) => void;
+  onDeleteTask: (id: string) => void;
+  onSelectTask: (taskId: string) => void;
+  onDuplicateTask: (id: string) => void;
+  hasReportedToday: boolean;
 }
 
-const GOOGLE_CLIENT_ID = "802814646338-ajmbskpflu2utqqe3gqg2k0bp15kakin.apps.googleusercontent.com";
-
-const LoginPage: React.FC<LoginPageProps> = ({ onLogin, error }) => {
-    const signInDivRef = useRef<HTMLDivElement>(null);
-    const [scriptLoaded, setScriptLoaded] = useState(false);
-    const [initError, setInitError] = useState<string | null>(null);
-
-    // This effect runs once to check for the Google script.
-    useEffect(() => {
-        const checkGoogleScript = () => {
-            if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
-                setScriptLoaded(true);
-                return true;
-            }
-            return false;
-        };
-
-        if (checkGoogleScript()) {
-            return;
-        }
-
-        const intervalId = setInterval(() => {
-            if (checkGoogleScript()) {
-                clearInterval(intervalId);
-            }
-        }, 200);
-
-        return () => clearInterval(intervalId);
-    }, []);
-
-    // This effect runs when the script is loaded.
-    useEffect(() => {
-        if (!scriptLoaded || !signInDivRef.current) {
-            return;
-        }
-
-        try {
-            google.accounts.id.initialize({
-                client_id: GOOGLE_CLIENT_ID,
-                callback: onLogin,
-            });
-    
-            if (signInDivRef.current.childElementCount === 0) {
-                google.accounts.id.renderButton(
-                    signInDivRef.current,
-                    { theme: 'filled_black', size: 'large', type: 'standard', text: 'signin_with', shape: 'rectangular', logo_alignment: 'left' }
-                );
-            }
-        } catch (err) {
-            console.error("Google 로그인 초기화 중 오류 발생:", err);
-            setInitError("Google 로그인 버튼을 불러오는 데 실패했습니다. 페이지를 새로고침 해주세요.");
-        }
-    }, [scriptLoaded, onLogin]);
-
-
-    return (
-        <div className="min-h-screen bg-gray-900 font-sans text-gray-200 flex items-center justify-center p-4 animate-fade-in">
-          <div className="w-full max-w-md text-center bg-gray-900/50 backdrop-blur-xl rounded-22xl shadow-lg p-8 md:p-12 border border-gray-800">
-            <h1 className="text-5xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-emerald-400 mb-4">
-              ZenTask
-            </h1>
-            <p className="text-gray-400 mb-10 text-lg">
-              자연어 기반으로 할 일을 손쉽게 관리하세요.
-            </p>
-            <div className="flex flex-col items-center gap-4">
-                <div ref={signInDivRef} className="flex justify-center"></div>
-                {initError && <p className="text-sm text-red-400 mt-4 px-4">{initError}</p>}
-                {error && (
-                  <p className="text-sm text-red-400 mt-4 px-4">{error}</p>
-                )}
-                <p className="text-xs text-gray-600 mt-4 px-4">
-                    @parable-asia.com 계정으로 로그인해주세요.
-                </p>
-            </div>
-          </div>
-        </div>
-    );
+const isToday = (someDate: Date) => {
+    const today = new Date();
+    return someDate.getDate() === today.getDate() &&
+        someDate.getMonth() === today.getMonth() &&
+        someDate.getFullYear() === today.getFullYear();
 };
 
-export default LoginPage;
+const LabelGroup: React.FC<{
+    label: Label | { id: null; name: string; color: string };
+    tasks: Task[];
+    projects: Project[];
+    labels: Label[];
+    onToggleTask: (id: string) => void;
+    onDeleteTask: (id: string) => void;
+    onSelectTask: (taskId: string) => void;
+    onDuplicateTask: (id: string) => void;
+    hasReportedToday: boolean;
+  }> = ({ label, tasks, projects, labels, onToggleTask, onDeleteTask, onSelectTask, onDuplicateTask, hasReportedToday }) => {
+      const [isOpen, setIsOpen] = useState(true);
+  
+      if (tasks.length === 0) return null;
+  
+      return (
+          <div>
+              <button onClick={() => setIsOpen(!isOpen)} className="w-full flex justify-between items-center p-3 bg-gray-800/40 rounded-lg text-left hover:bg-gray-800/80 transition">
+                  <div className="flex items-center gap-3">
+                      <TagIcon className="w-5 h-5 text-emerald-400" />
+                      <h3 className="font-bold text-lg">{label.name}</h3>
+                  </div>
+                  <span className="text-sm font-semibold bg-gray-900/60 text-gray-400 px-2.5 py-1 rounded-full">{tasks.length}</span>
+              </button>
+              {isOpen && (
+                  <div className="mt-2 space-y-2 pl-4 border-l-2 border-gray-800">
+                      {tasks.map(task => {
+                          const isLocked = hasReportedToday && task.completed && isToday(new Date(task.createdAt));
+                          return (
+                              <TaskItem
+                                  key={task.id}
+                                  task={task}
+                                  project={projects.find(p => p.id === task.projectId)}
+                                  label={label.id ? label as Label : undefined}
+                                  onToggle={onToggleTask}
+                                  onDelete={onDeleteTask}
+                                  onSelectTask={onSelectTask}
+                                  onDuplicate={onDuplicateTask}
+                                  isLocked={isLocked}
+                              />
+                          );
+                      })}
+                  </div>
+              )}
+          </div>
+      );
+  };
+
+const LabelView: React.FC<LabelViewProps> = ({ tasks, projects, labels, onToggleTask, onDeleteTask, onSelectTask, onDuplicateTask, hasReportedToday }) => {
+  const tasksByLabel = tasks.reduce((acc, task) => {
+    const labelId = task.labelId || 'unassigned';
+    if (!acc[labelId]) {
+      acc[labelId] = [];
+    }
+    acc[labelId].push(task);
+    return acc;
+  }, {} as Record<string, Task[]>);
+
+  return (
+    <div className="space-y-6">
+       <h2 className="text-2xl font-bold text-gray-200 border-b-2 border-gray-700 pb-2">라벨별 할 일</h2>
+      {labels.map(label => (
+        <LabelGroup
+            key={label.id}
+            label={label}
+            tasks={tasksByLabel[label.id] || []}
+            projects={projects}
+            labels={labels}
+            onToggleTask={onToggleTask}
+            onDeleteTask={onDeleteTask}
+            onSelectTask={onSelectTask}
+            onDuplicateTask={onDuplicateTask}
+            hasReportedToday={hasReportedToday}
+        />
+      ))}
+      <LabelGroup
+        label={{ id: null, name: '미지정', color: 'bg-gray-500' }}
+        tasks={tasksByLabel['unassigned'] || []}
+        projects={projects}
+        labels={labels}
+        onToggleTask={onToggleTask}
+        onDeleteTask={onDeleteTask}
+        onSelectTask={onSelectTask}
+        onDuplicateTask={onDuplicateTask}
+        hasReportedToday={hasReportedToday}
+      />
+    </div>
+  );
+};
+
+export default LabelView;
