@@ -49,8 +49,8 @@ const Header: React.FC<HeaderProps> = ({ currentView, setView, onAddTask, projec
                 </div>
 
                 {/* Navigation */}
-                <div className="order-3 md:order-2 w-full md:w-auto md:flex-grow flex justify-center">
-                    <nav className="flex items-center justify-center gap-1 p-1 bg-gray-900/50 backdrop-blur-md border border-gray-700/50 rounded-2xl flex-wrap">
+                <div className="order-3 md:order-2 w-full md:w-auto md:flex-grow flex">
+                    <nav className="w-full md:w-auto flex items-center justify-center gap-1 p-1 bg-gray-900/50 backdrop-blur-md border border-gray-700/50 rounded-2xl flex-wrap">
                         <NavButton label="대시보드" viewName="dashboard" currentView={currentView} setView={setView}>
                             <DashboardIcon className="w-6 h-6" />
                         </NavButton>

@@ -280,26 +280,22 @@ const ManagementView: React.FC<Omit<Props, 'allTasks' | 'dailyReports' | 'setAll
                             <FolderIcon className="w-6 h-6" />
                             프로젝트
                         </h3>
-                        <form onSubmit={handleAddProject} className="mb-4">
-                            <div className="flex justify-end mb-2">
-                                <div className="flex items-center gap-1 bg-gray-900/70 border border-gray-700 rounded-lg p-1">
-                                    {COLORS.map(color => (
-                                        <button type="button" key={color} onClick={() => setNewProjectColor(color)} className={`w-5 h-5 rounded-full ${color} ${newProjectColor === color ? 'ring-2 ring-offset-2 ring-offset-gray-900 ring-white' : ''}`}></button>
-                                    ))}
-                                </div>
+                        <form onSubmit={handleAddProject} className="flex gap-2 mb-4">
+                            <input
+                                type="text"
+                                value={newProjectName}
+                                onChange={(e) => setNewProjectName(e.target.value)}
+                                placeholder="새 프로젝트 이름"
+                                className="flex-grow bg-gray-900/70 border border-gray-700 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-sky-500"
+                            />
+                            <div className="flex items-center gap-1 bg-gray-800 border border-gray-700 rounded-lg p-1">
+                                {COLORS.map(color => (
+                                    <button type="button" key={color} onClick={() => setNewProjectColor(color)} className={`w-5 h-5 rounded-full ${color} ${newProjectColor === color ? 'ring-2 ring-offset-2 ring-offset-gray-900 ring-white' : ''}`}></button>
+                                ))}
                             </div>
-                            <div className="flex gap-2">
-                                <input
-                                    type="text"
-                                    value={newProjectName}
-                                    onChange={(e) => setNewProjectName(e.target.value)}
-                                    placeholder="새 프로젝트 이름"
-                                    className="flex-grow bg-gray-900/70 border border-gray-700 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-sky-500"
-                                />
-                                <button type="submit" className="bg-sky-500 hover:bg-sky-600 text-white font-bold p-2 rounded-lg transition-colors">
-                                    <PlusIcon className="w-5 h-5" />
-                                </button>
-                            </div>
+                            <button type="submit" className="bg-sky-500 hover:bg-sky-600 text-white font-bold p-2 rounded-lg transition-colors">
+                                <PlusIcon className="w-5 h-5" />
+                            </button>
                         </form>
 
                         <nav className="space-y-1 flex-grow overflow-y-auto pr-1">

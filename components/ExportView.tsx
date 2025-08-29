@@ -164,19 +164,21 @@ const ExportView: React.FC<ExportViewProps> = ({ tasks, projects, labels, dailyR
                     description="선택한 기간 내의 모든 할 일을 Excel 파일로 내보냅니다."
                 >
                     <div className="flex flex-col sm:flex-row gap-4 items-center">
-                        <input
-                            type="date"
-                            value={taskStartDate}
-                            onChange={(e) => setTaskStartDate(e.target.value)}
-                            className="w-full bg-gray-800 border border-gray-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
-                        />
-                        <span className="text-gray-400">~</span>
-                        <input
-                            type="date"
-                            value={taskEndDate}
-                            onChange={(e) => setTaskEndDate(e.target.value)}
-                            className="w-full bg-gray-800 border border-gray-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
-                        />
+                        <div className="flex-grow w-full flex items-center gap-2">
+                            <input
+                                type="date"
+                                value={taskStartDate}
+                                onChange={(e) => setTaskStartDate(e.target.value)}
+                                className="w-full bg-gray-800 border border-gray-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+                            />
+                            <span className="text-gray-400">~</span>
+                            <input
+                                type="date"
+                                value={taskEndDate}
+                                onChange={(e) => setTaskEndDate(e.target.value)}
+                                className="w-full bg-gray-800 border border-gray-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+                            />
+                        </div>
                          <button onClick={handleExportTasksByPeriod} className="flex-shrink-0 w-full sm:w-auto flex items-center justify-center gap-2 bg-sky-600 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded-lg transition-colors">
                             <ArrowDownTrayIcon className="w-5 h-5" />
                             <span>내보내기</span>
@@ -199,19 +201,21 @@ const ExportView: React.FC<ExportViewProps> = ({ tasks, projects, labels, dailyR
                     description="선택한 기간 내에 제출했던 모든 일일 업무 보고 내역을 Excel 파일로 내보냅니다."
                 >
                      <div className="flex flex-col sm:flex-row gap-4 items-center">
-                        <input
-                            type="date"
-                            value={dailyReportStartDate}
-                            onChange={(e) => setDailyReportStartDate(e.target.value)}
-                            className="w-full bg-gray-800 border border-gray-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
-                        />
-                        <span className="text-gray-400">~</span>
-                        <input
-                            type="date"
-                            value={dailyReportEndDate}
-                            onChange={(e) => setDailyReportEndDate(e.target.value)}
-                            className="w-full bg-gray-800 border border-gray-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
-                        />
+                        <div className="flex-grow w-full flex items-center gap-2">
+                            <input
+                                type="date"
+                                value={dailyReportStartDate}
+                                onChange={(e) => setDailyReportStartDate(e.target.value)}
+                                className="w-full bg-gray-800 border border-gray-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+                            />
+                            <span className="text-gray-400">~</span>
+                            <input
+                                type="date"
+                                value={dailyReportEndDate}
+                                onChange={(e) => setDailyReportEndDate(e.target.value)}
+                                className="w-full bg-gray-800 border border-gray-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+                            />
+                        </div>
                          <button onClick={handleExportDailyReportsByPeriod} className="flex-shrink-0 w-full sm:w-auto flex items-center justify-center gap-2 bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded-lg transition-colors">
                             <ArrowDownTrayIcon className="w-5 h-5" />
                             <span>내보내기</span>
@@ -224,19 +228,21 @@ const ExportView: React.FC<ExportViewProps> = ({ tasks, projects, labels, dailyR
                     description="선택한 기간 내에 작성했던 모든 월간 보고서의 내용을 Excel 파일로 내보냅니다."
                 >
                     <div className="flex flex-col sm:flex-row gap-4 items-center">
-                        <input
-                            type="month"
-                            value={monthlyReportStart}
-                            onChange={(e) => setMonthlyReportStart(e.target.value)}
-                            className="w-full bg-gray-800 border border-gray-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
-                        />
-                        <span className="text-gray-400">~</span>
-                        <input
-                            type="month"
-                            value={monthlyReportEnd}
-                            onChange={(e) => setMonthlyReportEnd(e.target.value)}
-                            className="w-full bg-gray-800 border border-gray-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
-                        />
+                        <div className="flex-grow w-full flex items-center gap-2">
+                            <input
+                                type="month"
+                                value={monthlyReportStart}
+                                onChange={(e) => setMonthlyReportStart(e.target.value)}
+                                className="w-full bg-gray-800 border border-gray-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+                            />
+                            <span className="text-gray-400">~</span>
+                            <input
+                                type="month"
+                                value={monthlyReportEnd}
+                                onChange={(e) => setMonthlyReportEnd(e.target.value)}
+                                className="w-full bg-gray-800 border border-gray-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+                            />
+                        </div>
                          <button onClick={handleExportMonthlyReportsByPeriod} className="flex-shrink-0 w-full sm:w-auto flex items-center justify-center gap-2 bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded-lg transition-colors">
                             <ArrowDownTrayIcon className="w-5 h-5" />
                             <span>내보내기</span>
