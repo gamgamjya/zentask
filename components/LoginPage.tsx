@@ -1,5 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { GoogleIcon } from './icons/Icons';
+import React, { useEffect, useRef } from 'react';
 
 declare const google: any;
 
@@ -8,83 +7,60 @@ interface LoginPageProps {
   error: string | null;
 }
 
-const GOOGLE_CLIENT_ID = "802814646338-ajmbskpflu2utqqe3gqg2k0bp15kakin.apps.googleusercontent.com";
-
 const LoginPage: React.FC<LoginPageProps> = ({ onLogin, error }) => {
-    const signInDivRef = useRef<HTMLDivElement>(null);
-    const [scriptLoaded, setScriptLoaded] = useState(false);
-    const [initError, setInitError] = useState<string | null>(null);
+  const signInDivRef = useRef<HTMLDivElement>(null);
 
-    // This effect runs once to check for the Google script.
-    useEffect(() => {
-        const checkGoogleScript = () => {
-            if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
-                setScriptLoaded(true);
-                return true;
-            }
-            return false;
-        };
-
-        if (checkGoogleScript()) {
-            return;
-        }
-
-        const intervalId = setInterval(() => {
-            if (checkGoogleScript()) {
-                clearInterval(intervalId);
-            }
-        }, 200);
-
-        return () => clearInterval(intervalId);
-    }, []);
-
-    // This effect runs when the script is loaded.
-    useEffect(() => {
-        if (!scriptLoaded || !signInDivRef.current) {
-            return;
-        }
-
-        try {
-            google.accounts.id.initialize({
-                client_id: GOOGLE_CLIENT_ID,
-                callback: onLogin,
-            });
+  useEffect(() => {
+    const GOOGLE_CLIENT_ID = "802814646338-ajmbskpflu2utqqe3gqg2k0bp15kakin.apps.googleusercontent.com";
     
-            if (signInDivRef.current.childElementCount === 0) {
-                google.accounts.id.renderButton(
-                    signInDivRef.current,
-                    { theme: 'filled_black', size: 'large', type: 'standard', text: 'signin_with', shape: 'rectangular', logo_alignment: 'left' }
-                );
-            }
+    // 이 함수는 Google 로그인 버튼을 초기화하고 렌더링하려고 시도합니다.
+    // 'google' 객체가 스크립트에서 아직 사용 가능하지 않은 경우 재시도합니다.
+    const initializeGoogleSignIn = () => {
+      if (typeof google !== 'undefined' && google.accounts?.id && signInDivRef.current) {
+        try {
+          google.accounts.id.initialize({
+            client_id: GOOGLE_CLIENT_ID,
+            callback: onLogin,
+          });
+          
+          google.accounts.id.renderButton(
+            signInDivRef.current,
+            { theme: 'filled_black', size: 'large', type: 'standard', text: 'signin_with', shape: 'rectangular', logo_alignment: 'left' } 
+          );
         } catch (err) {
-            console.error("Google 로그인 초기화 중 오류 발생:", err);
-            setInitError("Google 로그인 버튼을 불러오는 데 실패했습니다. 페이지를 새로고침 해주세요.");
+          console.error("Google 로그인 초기화 중 오류 발생:", err);
         }
-    }, [scriptLoaded, onLogin]);
+      } else {
+        // 스크립트가 아직 로드되지 않았다면 100ms 후에 재시도합니다.
+        setTimeout(initializeGoogleSignIn, 100);
+      }
+    };
+    
+    initializeGoogleSignIn();
 
+  }, [onLogin]);
 
-    return (
-        <div className="min-h-screen bg-gray-900 font-sans text-gray-200 flex items-center justify-center p-4 animate-fade-in">
-          <div className="w-full max-w-md text-center bg-gray-900/50 backdrop-blur-xl rounded-22xl shadow-lg p-8 md:p-12 border border-gray-800">
-            <h1 className="text-5xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-emerald-400 mb-4">
-              ZenTask
-            </h1>
-            <p className="text-gray-400 mb-10 text-lg">
-              자연어 기반으로 할 일을 손쉽게 관리하세요.
-            </p>
-            <div className="flex flex-col items-center gap-4">
-                <div ref={signInDivRef} className="flex justify-center"></div>
-                {initError && <p className="text-sm text-red-400 mt-4 px-4">{initError}</p>}
-                {error && (
-                  <p className="text-sm text-red-400 mt-4 px-4">{error}</p>
-                )}
-                <p className="text-xs text-gray-600 mt-4 px-4">
-                    @parable-asia.com 계정으로 로그인해주세요.
-                </p>
-            </div>
-          </div>
+  return (
+    <div className="min-h-screen bg-gray-900 font-sans text-gray-200 flex items-center justify-center p-4 animate-fade-in">
+      <div className="w-full max-w-md text-center bg-gray-900/50 backdrop-blur-xl rounded-2xl shadow-lg p-8 md:p-12 border border-gray-800">
+        <h1 className="text-5xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-emerald-400 mb-4">
+          ZenTask
+        </h1>
+        <p className="text-gray-400 mb-10 text-lg">
+          자연어 기반으로 할 일을 손쉽게 관리하세요.
+        </p>
+        <div className="flex flex-col items-center gap-4">
+          <div ref={signInDivRef} className="flex justify-center"></div>
+          {error && (
+            <p className="text-sm text-red-400 mt-4 px-4">{error}</p>
+          )}
+          <p className="text-xs text-gray-600 mt-4 px-4">
+            @parable-asia.com 계정으로 로그인해주세요.
+          </p>
         </div>
-    );
+      </div>
+    </div>
+  );
 };
 
 export default LoginPage;

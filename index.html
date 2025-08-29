@@ -16,7 +16,14 @@
   }
 }
 </script>
-<link rel="stylesheet" href="/index.css">
+<style>
+  /* QHD 및 4K와 같은 고해상도 화면을 위한 미세 조정 */
+  @media (min-width: 1921px) {
+    html {
+      font-size: 17px; /* 기본값 16px에서 약간 증가시켜 가독성 향상 */
+    }
+  }
+</style>
 </head>
   <body class="bg-gray-900 text-white">
     <div id="root"></div>
