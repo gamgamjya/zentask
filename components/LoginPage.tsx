@@ -11,32 +11,43 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
     const signInDivRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        if (typeof google === 'undefined') {
-            console.error("Google Identity Services 스크립트가 로드되지 않았습니다.");
+        const renderGoogleButton = () => {
+            if (typeof google === 'undefined' || !signInDivRef.current) {
+                return false; // Not ready yet
+            }
+
+            try {
+                const GOOGLE_CLIENT_ID = "802814646338-ajmbskpflu2utqqe3gqg2k0bp15kakin.apps.googleusercontent.com";
+
+                google.accounts.id.initialize({
+                    client_id: GOOGLE_CLIENT_ID,
+                    callback: onLogin,
+                });
+        
+                if (signInDivRef.current.childElementCount === 0) {
+                    google.accounts.id.renderButton(
+                        signInDivRef.current,
+                        { theme: 'filled_black', size: 'large', type: 'standard', text: 'signin_with', shape: 'rectangular', logo_alignment: 'left' }
+                    );
+                }
+                return true; // Success
+            } catch (error) {
+                console.error("Google 로그인 초기화 중 오류 발생:", error);
+                return true; // Stop trying on error
+            }
+        };
+
+        if (renderGoogleButton()) {
             return;
         }
 
-        // 중요: 이 부분에 실제 발급받은 Google Client ID를 입력해야 합니다.
-        const GOOGLE_CLIENT_ID = "802814646338-ajmbskpflu2utqqe3gqg2k0bp15kakin.apps.googleusercontent.com";
-
-        try {
-            google.accounts.id.initialize({
-                client_id: GOOGLE_CLIENT_ID,
-                callback: onLogin,
-            });
-    
-            if (signInDivRef.current) {
-                google.accounts.id.renderButton(
-                    signInDivRef.current,
-                    { theme: 'filled_black', size: 'large', type: 'standard', text: 'signin_with', shape: 'rectangular', logo_alignment: 'left' }
-                );
+        const intervalId = setInterval(() => {
+            if (renderGoogleButton()) {
+                clearInterval(intervalId);
             }
-    
-            // One-tap sign-in UI 표시 (선택 사항)
-            // google.accounts.id.prompt();
-        } catch (error) {
-            console.error("Google 로그인 초기화 중 오류 발생:", error);
-        }
+        }, 200);
+
+        return () => clearInterval(intervalId);
 
     }, [onLogin]);
 

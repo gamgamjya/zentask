@@ -14,6 +14,8 @@ function jwtDecode(token: string) {
   }
 }
 
+declare const google: any;
+
 const App: React.FC = () => {
   const [user, setUser] = useLocalStorage<User | null>('user', null);
   const [allUsers, setAllUsers] = useLocalStorage<User[]>('all_users', []);
@@ -41,9 +43,10 @@ const App: React.FC = () => {
   };
 
   const handleLogout = () => {
+    if (typeof google !== 'undefined') {
+      google.accounts.id.disableAutoSelect();
+    }
     setUser(null);
-    // 실제 프로덕션 환경에서는 google.accounts.id.disableAutoSelect() 등을 호출하여
-    // Google 세션에서도 로그아웃 처리를 할 수 있습니다.
   };
 
   if (!user) {
