@@ -104,7 +104,7 @@ const UserReportsView: React.FC<UserReportsViewProps> = ({ users, reports, proje
 
     return (
         <div className="space-y-4">
-            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-4">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-4 flex-wrap">
                 <h3 className="text-xl font-bold text-gray-300">일일 업무 보고 현황</h3>
                  <div className="flex items-center gap-2 flex-wrap justify-end">
                     <div className="flex items-center gap-1 bg-gray-800 p-1 rounded-lg">

@@ -164,7 +164,7 @@ const ExportView: React.FC<ExportViewProps> = ({ tasks, projects, labels, dailyR
                     description="선택한 기간 내의 모든 할 일을 Excel 파일로 내보냅니다."
                 >
                     <div className="flex flex-col sm:flex-row gap-4 items-center">
-                        <div className="flex-grow w-full flex items-center gap-2">
+                        <div className="flex-grow w-full sm:w-auto flex items-center gap-2">
                             <input
                                 type="date"
                                 value={taskStartDate}
@@ -201,7 +201,7 @@ const ExportView: React.FC<ExportViewProps> = ({ tasks, projects, labels, dailyR
                     description="선택한 기간 내에 제출했던 모든 일일 업무 보고 내역을 Excel 파일로 내보냅니다."
                 >
                      <div className="flex flex-col sm:flex-row gap-4 items-center">
-                        <div className="flex-grow w-full flex items-center gap-2">
+                        <div className="flex-grow w-full sm:w-auto flex items-center gap-2">
                             <input
                                 type="date"
                                 value={dailyReportStartDate}
@@ -228,7 +228,7 @@ const ExportView: React.FC<ExportViewProps> = ({ tasks, projects, labels, dailyR
                     description="선택한 기간 내에 작성했던 모든 월간 보고서의 내용을 Excel 파일로 내보냅니다."
                 >
                     <div className="flex flex-col sm:flex-row gap-4 items-center">
-                        <div className="flex-grow w-full flex items-center gap-2">
+                        <div className="flex-grow w-full sm:w-auto flex items-center gap-2">
                             <input
                                 type="month"
                                 value={monthlyReportStart}
