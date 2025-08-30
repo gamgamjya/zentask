@@ -104,7 +104,7 @@ const UserReportsView: React.FC<UserReportsViewProps> = ({ users, reports, proje
 
     return (
         <div className="space-y-4">
-            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-4 flex-wrap">
+            <div className="flex flex-wrap justify-between items-center gap-4 mb-4">
                 <h3 className="text-xl font-bold text-gray-300">일일 업무 보고 현황</h3>
                  <div className="flex items-center gap-2 flex-wrap justify-end">
                     <div className="flex items-center gap-1 bg-gray-800 p-1 rounded-lg">
@@ -205,8 +205,33 @@ const UserReportsView: React.FC<UserReportsViewProps> = ({ users, reports, proje
     );
 };
 
+const ManagementTabButton: React.FC<{ label: string; isActive: boolean; onClick: () => void }> = ({ label, isActive, onClick }) => (
+    <button
+        onClick={onClick}
+        className={`px-4 py-2 rounded-md text-sm font-semibold transition-colors flex-grow text-center ${
+            isActive ? 'bg-sky-600/80 text-white' : 'text-gray-400 hover:bg-gray-700/50 hover:text-gray-200'
+        }`}
+    >
+        {label}
+    </button>
+);
+
+
 const ManagementView: React.FC<Omit<Props, 'allTasks' | 'dailyReports' | 'setAllUsers' | 'monthlyReports'>> = ({ user, projects, setProjects, labels, setLabels, onDeleteAllTasks, onDeleteAllProjects, onDeleteAllLabels, showConfirmation }) => {
-    const [selectedView, setSelectedView] = useState<'global' | string>('global');
+    type ManagementTab = 'projects' | 'global_labels' | 'project_labels';
+    const [activeManagementTab, setActiveManagementTab] = useState<ManagementTab>('projects');
+    const [selectedProjectIdForLabels, setSelectedProjectIdForLabels] = useState<string>('');
+
+    useEffect(() => {
+        if (projects.length > 0 && !selectedProjectIdForLabels) {
+            setSelectedProjectIdForLabels(projects[0].id);
+        } else if (projects.length > 0 && !projects.find(p => p.id === selectedProjectIdForLabels)) {
+            setSelectedProjectIdForLabels(projects[0].id);
+        } else if (projects.length === 0) {
+            setSelectedProjectIdForLabels('');
+        }
+    }, [projects, selectedProjectIdForLabels]);
+
     const [newProjectName, setNewProjectName] = useState('');
     const [newProjectColor, setNewProjectColor] = useState(COLORS[0]);
     const [editingProject, setEditingProject] = useState<Project | null>(null);
@@ -249,9 +274,6 @@ const ManagementView: React.FC<Omit<Props, 'allTasks' | 'dailyReports' | 'setAll
                 `'${projectToDelete.name}' 프로젝트를 정말 삭제하시겠습니까? 이 프로젝트에 속한 모든 라벨도 함께 삭제됩니다.`,
                 () => {
                     setProjectsWrapper(prev => prev.filter(p => p.id !== id));
-                    if (selectedView === id) {
-                        setSelectedView('global');
-                    }
                 }
             );
         }
@@ -269,16 +291,19 @@ const ManagementView: React.FC<Omit<Props, 'allTasks' | 'dailyReports' | 'setAll
         setEditingProject({...project});
     };
 
-    const selectedProject = selectedView !== 'global' ? projects.find(p => p.id === selectedView) : null;
-
     return (
         <div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div className="md:col-span-1">
-                    <div className="p-4 bg-gray-800/30 rounded-lg border border-gray-700/50 h-full flex flex-col">
+            <div className="flex items-center gap-2 p-1 bg-gray-800/30 border border-gray-700/50 rounded-xl mb-6">
+                <ManagementTabButton label="프로젝트 관리" isActive={activeManagementTab === 'projects'} onClick={() => setActiveManagementTab('projects')} />
+                <ManagementTabButton label="글로벌 라벨 관리" isActive={activeManagementTab === 'global_labels'} onClick={() => setActiveManagementTab('global_labels')} />
+                <ManagementTabButton label="프로젝트별 라벨 관리" isActive={activeManagementTab === 'project_labels'} onClick={() => setActiveManagementTab('project_labels')} />
+            </div>
+
+            <div className="animate-fade-in-fast">
+                {activeManagementTab === 'projects' && (
+                    <div className="p-4 bg-gray-800/30 rounded-lg border border-gray-700/50">
                         <h3 className="text-xl font-bold mb-4 flex items-center gap-2 text-gray-300">
-                            <FolderIcon className="w-6 h-6" />
-                            프로젝트
+                           <FolderIcon className="w-6 h-6" /> 프로젝트 관리
                         </h3>
                         <form onSubmit={handleAddProject} className="flex gap-2 mb-4">
                             <input
@@ -297,89 +322,86 @@ const ManagementView: React.FC<Omit<Props, 'allTasks' | 'dailyReports' | 'setAll
                                 <PlusIcon className="w-5 h-5" />
                             </button>
                         </form>
-
-                        <nav className="space-y-1 flex-grow overflow-y-auto pr-1">
-                             <button
-                                onClick={() => setSelectedView('global')}
-                                className={`w-full text-left px-3 py-2 rounded-md flex items-center gap-3 transition-colors ${
-                                    selectedView === 'global' ? 'bg-sky-900/60 text-sky-300' : 'hover:bg-gray-800/50'
-                                }`}
-                            >
-                                <TagIcon className="w-5 h-5" />
-                                <span className="flex-grow font-semibold">글로벌 라벨</span>
-                            </button>
-                            <div className="border-t border-gray-700 my-2"></div>
+                         <div className="space-y-2">
                             {projects.map(project => (
                                 <div key={project.id}>
-                                {editingProject?.id === project.id ? (
-                                    <form onSubmit={handleUpdateProject} className="flex flex-col items-stretch gap-2 p-2 bg-gray-700/80 rounded-lg">
-                                        <input
-                                            type="text"
-                                            value={editingProject.name}
-                                            onChange={(e) => setEditingProject({...editingProject, name: e.target.value})}
-                                            className="bg-gray-600 border border-gray-500 rounded-md px-2 py-1"
-                                        />
-                                        <div className="flex items-center gap-1">
-                                            {COLORS.map(color => (
-                                                <button type="button" key={color} onClick={() => setEditingProject({...editingProject, color: color})} className={`w-5 h-5 rounded-full ${color} ${editingProject.color === color ? 'ring-2 ring-white' : ''}`}></button>
-                                            ))}
+                                    {editingProject?.id === project.id ? (
+                                        <form onSubmit={handleUpdateProject} className="flex items-center gap-2 p-2 bg-gray-700/80 rounded-lg">
+                                            <input
+                                                type="text"
+                                                value={editingProject.name}
+                                                onChange={(e) => setEditingProject({...editingProject, name: e.target.value})}
+                                                className="flex-grow bg-gray-600 border border-gray-500 rounded-md px-2 py-1"
+                                            />
+                                            <div className="flex items-center gap-1">
+                                                {COLORS.map(color => (
+                                                    <button type="button" key={color} onClick={() => setEditingProject({...editingProject, color: color})} className={`w-5 h-5 rounded-full ${color} ${editingProject.color === color ? 'ring-2 ring-white' : ''}`}></button>
+                                                ))}
+                                            </div>
+                                            <button type="submit" className="text-emerald-400 hover:text-emerald-300 p-1">저장</button>
+                                            <button type="button" onClick={() => setEditingProject(null)} className="text-gray-400 hover:text-gray-200 p-1">취소</button>
+                                        </form>
+                                    ) : (
+                                        <div className="flex items-center gap-2 p-2 bg-gray-800/50 rounded-lg group">
+                                            <span className={`w-3 h-3 rounded-full ${project.color}`}></span>
+                                            <span className="flex-grow">{project.name}</span>
+                                            <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center">
+                                                <button onClick={() => startEditingProject(project)} className="p-1 text-gray-400 hover:text-amber-400 transition-colors">
+                                                    <PencilIcon className="w-4 h-4" />
+                                                </button>
+                                                <button onClick={() => handleDeleteProject(project.id)} className="p-1 text-gray-400 hover:text-red-500 transition-colors">
+                                                    <TrashIcon className="w-4 h-4" />
+                                                </button>
+                                            </div>
                                         </div>
-                                        <div className="flex gap-2">
-                                            <button type="submit" className="flex-grow bg-emerald-600 hover:bg-emerald-700 text-white text-sm py-1 rounded">저장</button>
-                                            <button type="button" onClick={() => setEditingProject(null)} className="flex-grow bg-gray-500 hover:bg-gray-600 text-white text-sm py-1 rounded">취소</button>
-                                        </div>
-                                    </form>
-                                ) : (
-                                    <div className="group flex items-center gap-1">
-                                        <button
-                                            onClick={() => setSelectedView(project.id)}
-                                            className={`flex-grow text-left px-3 py-2 rounded-md flex items-center gap-3 transition-colors ${
-                                                selectedView === project.id ? 'bg-sky-900/60 text-sky-300' : 'hover:bg-gray-800/50'
-                                            }`}
-                                        >
-                                            <span className={`w-3 h-3 rounded-full ${project.color} flex-shrink-0`}></span>
-                                            <span className="flex-grow truncate">{project.name}</span>
-                                        </button>
-                                        <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center flex-shrink-0">
-                                            <button onClick={() => startEditingProject(project)} className="p-1 text-gray-400 hover:text-amber-400 transition-colors">
-                                                <PencilIcon className="w-4 h-4" />
-                                            </button>
-                                            <button onClick={() => handleDeleteProject(project.id)} className="p-1 text-gray-400 hover:text-red-500 transition-colors">
-                                                <TrashIcon className="w-4 h-4" />
-                                            </button>
-                                        </div>
-                                    </div>
-                                )}
+                                    )}
                                 </div>
                             ))}
-                        </nav>
+                        </div>
                     </div>
-                </div>
+                )}
 
-                <div className="md:col-span-2">
-                     <div className="p-4 bg-gray-800/30 rounded-lg border border-gray-700/50 h-full">
-                        {selectedView === 'global' && (
+                {activeManagementTab === 'global_labels' && (
+                    <div className="p-4 bg-gray-800/30 rounded-lg border border-gray-700/50">
+                         <LabelManagement
+                            key="global"
+                            title="글로벌 라벨"
+                            labels={labels.filter(l => l.projectId === null)}
+                            setLabels={setLabels}
+                            projectId={null}
+                            showConfirmation={showConfirmation}
+                        />
+                    </div>
+                )}
+
+                {activeManagementTab === 'project_labels' && (
+                     <div className="p-4 bg-gray-800/30 rounded-lg border border-gray-700/50">
+                        <div className="mb-4">
+                            <label htmlFor="project-select-for-labels" className="block text-sm font-medium text-gray-400 mb-2">라벨을 관리할 프로젝트 선택:</label>
+                            <select
+                                id="project-select-for-labels"
+                                value={selectedProjectIdForLabels}
+                                onChange={(e) => setSelectedProjectIdForLabels(e.target.value)}
+                                className="w-full bg-gray-800/60 border border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500"
+                                disabled={projects.length === 0}
+                            >
+                                {projects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                            </select>
+                        </div>
+                        {projects.length > 0 && selectedProjectIdForLabels ? (
                             <LabelManagement
-                                key="global"
-                                title="글로벌 라벨"
-                                labels={labels.filter(l => l.projectId === null)}
+                                key={selectedProjectIdForLabels}
+                                title={`'${projects.find(p => p.id === selectedProjectIdForLabels)?.name}' 프로젝트 라벨`}
+                                labels={labels.filter(l => l.projectId === selectedProjectIdForLabels)}
                                 setLabels={setLabels}
-                                projectId={null}
+                                projectId={selectedProjectIdForLabels}
                                 showConfirmation={showConfirmation}
                             />
-                        )}
-                        {selectedProject && (
-                            <LabelManagement
-                                key={selectedProject.id}
-                                title={`'${selectedProject.name}' 프로젝트 라벨`}
-                                labels={labels.filter(l => l.projectId === selectedProject.id)}
-                                setLabels={setLabels}
-                                projectId={selectedProject.id}
-                                showConfirmation={showConfirmation}
-                            />
+                        ) : (
+                            <p className="text-gray-500 text-center py-4">프로젝트를 먼저 생성해주세요.</p>
                         )}
                     </div>
-                </div>
+                )}
             </div>
             {user.isAdmin && (
                 <DangerZone 
