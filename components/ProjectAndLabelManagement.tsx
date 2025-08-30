@@ -397,8 +397,8 @@ const ManagementView: React.FC<Omit<Props, 'allTasks' | 'dailyReports' | 'setAll
 const TabButton: React.FC<{ label: string; isActive: boolean; onClick: () => void }> = ({ label, isActive, onClick }) => (
     <button 
         onClick={onClick}
-        className={`px-3 sm:px-4 pb-2 pt-1 border-b-2 text-sm font-semibold transition-colors ${
-            isActive ? 'text-sky-400 border-sky-400' : 'text-gray-400 border-transparent hover:text-gray-200 hover:border-gray-500'
+        className={`px-4 py-1.5 rounded-md text-sm font-semibold transition-colors ${
+            isActive ? 'bg-sky-600 text-white' : 'text-gray-400 hover:bg-gray-700/50 hover:text-gray-200'
         }`}
     >
         {label}
@@ -412,12 +412,12 @@ const ProjectAndLabelManagement: React.FC<Props> = (props) => {
     const [activeTab, setActiveTab] = useState<AdminTab>('management');
 
     return (
-        <div>
-            <div className="flex flex-col sm:flex-row justify-between items-center border-b-2 border-gray-700 pb-2 mb-6 gap-4">
+        <div className="bg-gray-900/50 p-6 rounded-xl border border-gray-800/50">
+            <div className="flex flex-col sm:flex-row justify-between items-center border-b-2 border-gray-700 pb-4 mb-6 gap-4">
                 <h2 className="text-2xl font-bold text-gray-200 flex items-center gap-3 flex-shrink-0">
                     관리 페이지 <AdminBadge />
                 </h2>
-                <nav className="flex items-center gap-1 flex-wrap justify-center sm:justify-end">
+                <nav className="flex items-center gap-2 p-1 bg-gray-800/50 rounded-lg flex-wrap justify-center sm:justify-end">
                     <TabButton 
                         label="프로젝트/라벨" 
                         isActive={activeTab === 'management'} 
@@ -441,10 +441,12 @@ const ProjectAndLabelManagement: React.FC<Props> = (props) => {
                 </nav>
             </div>
 
-            {activeTab === 'management' && <ManagementView {...props} />}
-            {activeTab === 'daily_reports' && <UserReportsView users={allUsers} reports={dailyReports} projects={projects} labels={labels} />}
-            {activeTab === 'monthly_reports' && <MonthlyReportsView allUsers={allUsers} monthlyReports={monthlyReports} />}
-            {activeTab === 'accounts' && <AccountManagementView currentUser={user} allUsers={allUsers} setAllUsers={setAllUsers} showConfirmation={showConfirmation} />}
+            <div className="animate-fade-in">
+                {activeTab === 'management' && <ManagementView {...props} />}
+                {activeTab === 'daily_reports' && <UserReportsView users={allUsers} reports={dailyReports} projects={projects} labels={labels} />}
+                {activeTab === 'monthly_reports' && <MonthlyReportsView allUsers={allUsers} monthlyReports={monthlyReports} />}
+                {activeTab === 'accounts' && <AccountManagementView currentUser={user} allUsers={allUsers} setAllUsers={setAllUsers} showConfirmation={showConfirmation} />}
+            </div>
         </div>
     );
 };

@@ -37,13 +37,13 @@ const ProjectGroup: React.FC<{
     if (tasks.length === 0) return null;
 
     return (
-        <div>
-            <button onClick={() => setIsOpen(!isOpen)} className="w-full flex justify-between items-center p-3 bg-gray-800/40 rounded-lg text-left hover:bg-gray-800/80 transition">
+        <div className="bg-gray-900/50 rounded-xl p-4 border border-gray-800/50">
+            <button onClick={() => setIsOpen(!isOpen)} className="w-full flex justify-between items-center p-2 rounded-lg text-left hover:bg-gray-800/80 transition">
                 <div className="flex items-center gap-3">
                     <FolderIcon className="w-5 h-5 text-sky-400" />
                     <h3 className="font-bold text-lg">{project.name}</h3>
                 </div>
-                <span className="text-sm font-semibold bg-gray-900/60 text-gray-400 px-2.5 py-1 rounded-full">{tasks.length}</span>
+                <span className="text-sm font-semibold bg-gray-800 text-gray-400 px-2.5 py-1 rounded-full">{tasks.length}</span>
             </button>
             {isOpen && (
                 <div className="mt-2 space-y-2 pl-4 border-l-2 border-gray-800">

@@ -21,6 +21,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, error }) => {
           google.accounts.id.initialize({
             client_id: GOOGLE_CLIENT_ID,
             callback: onLogin,
+            use_fedcm_for_prompt: true, // FedCM을 활성화하여 COOP/COEP 정책 문제를 해결
           });
           
           google.accounts.id.renderButton(
@@ -41,7 +42,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, error }) => {
   }, [onLogin]);
 
   return (
-    <div className="min-h-screen bg-gray-900 font-sans text-gray-200 flex items-center justify-center p-4 animate-fade-in">
+    <div className="min-h-screen bg-gray-950 font-sans text-gray-200 flex items-center justify-center p-4 animate-fade-in bg-gradient-to-br from-gray-950 via-gray-950 to-sky-900/20">
       <div className="w-full max-w-md text-center bg-gray-900/50 backdrop-blur-xl rounded-2xl shadow-lg p-8 md:p-12 border border-gray-800">
         <h1 className="text-5xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-emerald-400 mb-4">
           ZenTask

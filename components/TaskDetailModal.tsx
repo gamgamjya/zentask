@@ -470,7 +470,7 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({ task, projects, label
 
                             </div>
                         </div>
-                        <div className="md:col-span-1 space-y-5 md:border-l md:border-gray-700/50 md:pl-8 md:-ml-2 pt-4 md:pt-0">
+                        <div className="md:col-span-1 space-y-6 md:border-l md:border-gray-700/50 md:pl-8 md:-ml-2 pt-4 md:pt-0">
                             <CustomDropdown 
                                 items={projectItems}
                                 selectedId={projectId}

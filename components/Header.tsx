@@ -24,21 +24,21 @@ const NavButton: React.FC<{
   return (
     <button
       onClick={() => setView(viewName)}
-      className={`flex flex-col items-center justify-center gap-1 p-2 w-24 h-20 rounded-xl transition-colors duration-200 ${
+      className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg transition-colors duration-200 ${
         isActive
-          ? 'bg-sky-500/10 text-sky-400'
-          : 'text-gray-400 hover:bg-gray-800 hover:text-sky-400'
+          ? 'bg-sky-500/20 text-sky-300'
+          : 'text-gray-400 hover:bg-gray-800 hover:text-gray-200'
       }`}
     >
       {children}
-      <span className="mt-1 text-xs font-semibold text-center leading-tight">{label}</span>
+      <span className="text-sm font-semibold leading-tight">{label}</span>
     </button>
   );
 };
 
 const Header: React.FC<HeaderProps> = ({ currentView, setView, onAddTask, projects, labels, user, onLogout }) => {
   return (
-    <header className="sticky top-0 z-30 bg-gray-900/60 backdrop-blur-xl border-b border-gray-800">
+    <header className="sticky top-0 z-30 bg-gray-950/60 backdrop-blur-xl border-b border-gray-800">
         <div className="w-full max-w-6xl mx-auto p-4 md:px-8">
             <div className="flex flex-wrap md:flex-nowrap justify-between items-center gap-x-4 gap-y-2">
                 {/* Logo */}
@@ -50,25 +50,25 @@ const Header: React.FC<HeaderProps> = ({ currentView, setView, onAddTask, projec
 
                 {/* Navigation */}
                 <div className="order-3 md:order-2 w-full md:w-auto md:flex-grow flex">
-                    <nav className="w-full md:w-auto flex items-center justify-center gap-1 p-1 bg-gray-900/50 backdrop-blur-md border border-gray-700/50 rounded-2xl flex-wrap">
+                    <nav className="w-full md:w-auto flex items-center justify-center gap-2 p-2 bg-gray-900/50 backdrop-blur-md border border-gray-700/50 rounded-xl flex-wrap">
                         <NavButton label="대시보드" viewName="dashboard" currentView={currentView} setView={setView}>
-                            <DashboardIcon className="w-6 h-6" />
+                            <DashboardIcon className="w-5 h-5" />
                         </NavButton>
                         <NavButton label="캘린더" viewName="calendar" currentView={currentView} setView={setView}>
-                            <CalendarIcon className="w-6 h-6" />
+                            <CalendarIcon className="w-5 h-5" />
                         </NavButton>
-                        <NavButton label="프로젝트별" viewName="projects" currentView={currentView} setView={setView}>
-                            <FolderIcon className="w-6 h-6" />
+                        <NavButton label="프로젝트" viewName="projects" currentView={currentView} setView={setView}>
+                            <FolderIcon className="w-5 h-5" />
                         </NavButton>
-                        <NavButton label="라벨별" viewName="labels" currentView={currentView} setView={setView}>
-                            <TagIcon className="w-6 h-6" />
+                        <NavButton label="라벨" viewName="labels" currentView={currentView} setView={setView}>
+                            <TagIcon className="w-5 h-5" />
                         </NavButton>
                         <NavButton label="내보내기" viewName="export" currentView={currentView} setView={setView}>
-                            <ArrowDownTrayIcon className="w-6 h-6" />
+                            <ArrowDownTrayIcon className="w-5 h-5" />
                         </NavButton>
                         {user.isAdmin && (
                           <NavButton label="관리" viewName="tasks" currentView={currentView} setView={setView}>
-                              <TasksIcon className="w-6 h-6" />
+                              <TasksIcon className="w-5 h-5" />
                           </NavButton>
                         )}
                     </nav>

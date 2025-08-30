@@ -565,7 +565,7 @@ const MainApp: React.FC<MainAppProps> = ({ user, onLogout, setUser, allUsers, se
   const selectedTask = tasks.find(t => t.id === selectedTaskId);
 
   return (
-    <div className="min-h-screen bg-gray-900 font-sans text-gray-200">
+    <div className="min-h-screen bg-gray-950 font-sans text-gray-200">
        <Header
         currentView={view}
         setView={setView}
@@ -575,9 +575,8 @@ const MainApp: React.FC<MainAppProps> = ({ user, onLogout, setUser, allUsers, se
         user={user}
         onLogout={onLogout}
       />
-      <div className="w-full max-w-6xl mx-auto p-4 md:p-8">
-        <main className="mt-4">
-          <div className="bg-gray-900/50 backdrop-blur-xl rounded-2xl shadow-2xl p-6 border border-gray-700/50 min-h-[60vh]">
+      <main className="w-full max-w-6xl mx-auto p-4 md:p-8">
+        <div className="mt-4">
             {view === 'tasks' && user.isAdmin ? (
               <ProjectAndLabelManagement 
                 user={user}
@@ -595,11 +594,10 @@ const MainApp: React.FC<MainAppProps> = ({ user, onLogout, setUser, allUsers, se
                 monthlyReports={monthlyReports}
                 showConfirmation={showConfirmation}
               />
-            ) : view !== 'export' && renderView()}
-            {view === 'export' && renderView()}
+            ) : renderView() }
           </div>
-        </main>
-      </div>
+      </main>
+      
        {portalRoot && createPortal(
           <div className="fixed top-5 right-5 z-50 space-y-2 w-full max-w-sm">
               {notifications.map(n => (

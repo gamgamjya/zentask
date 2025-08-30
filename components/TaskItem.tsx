@@ -66,15 +66,15 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, project, label, onToggle, onD
   };
   
   const itemClasses = [
-    'flex items-center gap-4 p-3 rounded-lg transition-all duration-200 border',
+    'flex items-center gap-4 p-3 rounded-lg transition-all duration-200 border-2',
     isLocked 
         ? 'bg-gray-900/50 opacity-60 cursor-not-allowed border-transparent'
         : task.completed
-            ? 'bg-gray-800/20 opacity-50 border-transparent'
-            : 'bg-gray-800/60 hover:bg-gray-800 border-transparent hover:border-sky-500/30 cursor-pointer'
+            ? 'bg-transparent opacity-50 border-transparent'
+            : 'bg-gray-800/40 hover:bg-gray-800/80 border-transparent hover:border-sky-500/30 cursor-pointer'
   ].join(' ');
 
-  const contentClasses = `flex-grow ${task.completed ? `text-gray-500 ${showStrikethroughOnComplete ? 'line-through' : ''}` : 'text-gray-200'}`;
+  const contentClasses = `flex-grow transition-colors ${task.completed ? `text-gray-500 ${showStrikethroughOnComplete ? 'line-through' : ''}` : 'text-gray-200'}`;
 
   return (
     <>
@@ -84,13 +84,15 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, project, label, onToggle, onD
         title={isLocked ? '보고를 취소한 후에만 수정/변경할 수 있습니다.' : ''}
         className={itemClasses}>
         <div className="flex-shrink-0" onClick={(e) => e.stopPropagation()}>
-          <input
-            type="checkbox"
-            checked={task.completed}
-            disabled={isLocked}
-            onChange={() => onToggle(task.id)}
-            className={`form-checkbox h-5 w-5 rounded-md bg-gray-700 border-gray-600 text-sky-500 focus:ring-sky-500 flex-shrink-0 ${ isLocked ? 'cursor-not-allowed' : 'cursor-pointer' }`}
-          />
+          <label className={`custom-checkbox ${isLocked ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
+            <input
+              type="checkbox"
+              checked={task.completed}
+              disabled={isLocked}
+              onChange={() => onToggle(task.id)}
+            />
+            <span className="checkmark"></span>
+          </label>
         </div>
         <span className={contentClasses}>
           {task.content}
